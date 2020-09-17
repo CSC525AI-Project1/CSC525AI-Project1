@@ -1,18 +1,17 @@
 import numpy as np
 from EightPuzzleGame_State import State
+
 '''
 This class implement the Best-First-Search (BFS) algorithm along with the Heuristic search strategies
-
 In this algorithm, an OPEN list is used to store the unexplored states and 
 a CLOSE list is used to store the visited state. OPEN list is a priority queue. 
 The priority is insured through sorting the OPEN list each time after new states are generated 
 and added into the list. The heuristics are used as sorting criteria.
-
 In this informed search, reducing the state space search complexity is the main criterion. 
 We define heuristic evaluations to reduce the states that need to be checked every iteration. 
 Evaluation function is used to express the quality of informedness of a heuristic algorithm. 
-
 '''
+
 
 class InformedSearchSolver:
     current = State()
@@ -85,28 +84,59 @@ class InformedSearchSolver:
                     break
 
         self.depth += 1
-
         ''' The following program is used to do the state space walk '''
         # ↑ move up
         if (row - 1) >= 0:
-            #TODO your code start here
+            # TODO your code start here
             """
-             *get the 2d array of current 
-             *define a temp 2d array and loop over current.tile_seq
-             *pass the value from current.tile_seq to temp array
+            *get the 2d array of current 
+            *define a temp 2d array and loop over current.tile_seq
+            *pass the value from current.tile_seq to temp array 
+            """
+            tempArray = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0]])
+            for i in range(len(self.current.tile_seq)):
+                for j in range(len(self.current.tile_seq[i])):
+                    tempArray[i, j] = self.current.tile_seq[i, j]
+            """
              *↑ is correspond to (row, col) and (row-1, col)
              *exchange these two tiles of temp
-             *define a new temp state via temp array
+            """
+            tempHolder = tempArray[row, col]
+            tempArray[row, col] = tempArray[row-1, col]
+            tempArray[row-1, col] = tempHolder
+            #print("temp up \n", tempArray)
+
+            """
              *call check_inclusive(temp state)
+             *define a new temp state via temp array
+            """
+            tempState = State()
+            tempState.tile_seq = tempArray
+            tempState.depth = self.depth
+            flag = self.check_inclusive(tempState)
+            #print("TempState \n",  tempState.tile_seq)
+            """
              *do the next steps according to flag
              *if flag = 1 //not in open and closed
              *begin
              *assign the child a heuristic value via heuristic_test(temp state);
              *add the child to open
              *end;
+             """
+            if flag[0] == 1:
+                self.heuristic_test(tempState)
+                self.openlist.append(tempState)
+                #print("open list \n", self.openlist)
+            """
              *if flag = 2 //in the open list
              *if the child was reached by a shorter path
              *then give the state on open the shorter path
+             """
+            if flag[0] == 2:
+                if self.openlist[flag[1]].depth > tempState.depth:
+                   self.openlist[flag[1]].depth = tempState.depth
+            #print("depth", tempState.depth)
+            """
              *if flag = 3 //in the closed list
              *if the child was reached by a shorter path then
              *begin
@@ -114,29 +144,63 @@ class InformedSearchSolver:
              *add the child to open
              *end;
             """
-            #TODO your code end here
-            
+            if flag[0] == 3:
+                if self.closed[flag[1]].depth > tempState.depth:
+                    self.closed.remove(self.closed[flag[1]])
+                    self.openlist.append(tempState)
+            # TODO your code end here
 
         # ↓ move down
         if (row + 1) < len(walk_state):
-            #TODO your code start here
+            # TODO your code start here
             """
-             *get the 2d array of current 
-             *define a temp 2d array and loop over current.tile_seq
-             *pass the value from current.tile_seq to temp array
+            *get the 2d array of current 
+            *define a temp 2d array and loop over current.tile_seq
+            *pass the value from current.tile_seq to temp array 
+            """
+            tempArray = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0]])
+            for i in range(len(self.current.tile_seq)):
+                for j in range(len(self.current.tile_seq[i])):
+                    tempArray[i, j] = self.current.tile_seq[i, j]
+            """
              *↓ is correspond to (row, col) and (row+1, col)
              *exchange these two tiles of temp
-             *define a new temp state via temp array
-             *call check_inclusive(temp state)
+            """
+            tempHolder = tempArray[row, col]
+            tempArray[row, col] = tempArray[row+1, col]
+            tempArray[row+1, col] = tempHolder
+            #print("temp down \n", tempArray)
+            """
+                         *call check_inclusive(temp state)
+                         *define a new temp state via temp array
+                        """
+            tempState = State()
+            tempState.tile_seq = tempArray
+            tempState.depth = self.depth
+            flag = self.check_inclusive(tempState)
+            # print("TempState \n",  tempState.tile_seq)
+            """
              *do the next steps according to flag
              *if flag = 1 //not in open and closed
              *begin
              *assign the child a heuristic value via heuristic_test(temp state);
              *add the child to open
              *end;
+             """
+            if flag[0] == 1:
+                self.heuristic_test(tempState)
+                self.openlist.append(tempState)
+                # print("open list \n", self.openlist)
+            """
              *if flag = 2 //in the open list
              *if the child was reached by a shorter path
              *then give the state on open the shorter path
+             """
+            if flag[0] == 2:
+                if self.openlist[flag[1]].depth > tempState.depth:
+                    self.openlist[flag[1]].depth = tempState.depth
+            # print("depth", tempState.depth)
+            """
              *if flag = 3 //in the closed list
              *if the child was reached by a shorter path then
              *begin
@@ -144,28 +208,64 @@ class InformedSearchSolver:
              *add the child to open
              *end;
             """
-            #TODO your code end here
+            if flag[0] == 3:
+                if self.closed[flag[1]].depth > tempState.depth:
+                    self.closed.remove(self.closed[flag[1]])
+                    self.openlist.append(tempState)
+            # TODO your code end here
 
         # ← move left
         if (col - 1) >= 0:
-            #TODO your code start here
+            # TODO your code start here
             """
-             *get the 2d array of current 
-             *define a temp 2d array and loop over current.tile_seq
-             *pass the value from current.tile_seq to temp array
-             *← is correspond to (row, col) and (row, col-1)
+            *get the 2d array of current 
+            *define a temp 2d array and loop over current.tile_seq
+            *pass the value from current.tile_seq to temp array 
+            """
+            tempArray = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0]])
+            for i in range(len(self.current.tile_seq)):
+                for j in range(len(self.current.tile_seq[i])):
+                    tempArray[i, j] = self.current.tile_seq[i, j]
+            """
+             *↑ is correspond to (row, col) and (row, col-1)
              *exchange these two tiles of temp
-             *define a new temp state via temp array
+            """
+            tempHolder = tempArray[row, col]
+            tempArray[row, col] = tempArray[row, col-1]
+            tempArray[row, col-1] = tempHolder
+            #print("temp left \n", tempArray)
+
+            """
              *call check_inclusive(temp state)
+             *define a new temp state via temp array
+            """
+            tempState = State()
+            tempState.tile_seq = tempArray
+            tempState.depth = self.depth
+            flag = self.check_inclusive(tempState)
+            # print("TempState \n",  tempState.tile_seq)
+            """
              *do the next steps according to flag
              *if flag = 1 //not in open and closed
              *begin
              *assign the child a heuristic value via heuristic_test(temp state);
              *add the child to open
              *end;
+             """
+            if flag[0] == 1:
+                self.heuristic_test(tempState)
+                self.openlist.append(tempState)
+                # print("open list \n", self.openlist)
+            """
              *if flag = 2 //in the open list
              *if the child was reached by a shorter path
              *then give the state on open the shorter path
+             """
+            if flag[0] == 2:
+                if self.openlist[flag[1]].depth > tempState.depth:
+                    self.openlist[flag[1]].depth = tempState.depth
+            # print("depth", tempState.depth)
+            """
              *if flag = 3 //in the closed list
              *if the child was reached by a shorter path then
              *begin
@@ -173,28 +273,64 @@ class InformedSearchSolver:
              *add the child to open
              *end;
             """
-            #TODO your code end here
+            if flag[0] == 3:
+                if self.closed[flag[1]].depth > tempState.depth:
+                    self.closed.remove(self.closed[flag[1]])
+                    self.openlist.append(tempState)
+            # TODO your code end here
 
         # → move right
         if (col + 1) < len(walk_state):
-            #TODO your code start here
+            # TODO your code start here
             """
-             *get the 2d array of current 
-             *define a temp 2d array and loop over current.tile_seq
-             *pass the value from current.tile_seq to temp array
-             *→ is correspond to (row, col) and (row, col+1)
+            *get the 2d array of current 
+            *define a temp 2d array and loop over current.tile_seq
+            *pass the value from current.tile_seq to temp array 
+            """
+            tempArray = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0]])
+            for i in range(len(self.current.tile_seq)):
+                for j in range(len(self.current.tile_seq[i])):
+                    tempArray[i, j] = self.current.tile_seq[i, j]
+            """
+             *↑ is correspond to (row, col) and (row, col+1)
              *exchange these two tiles of temp
-             *define a new temp state via temp array
+            """
+            tempHolder = tempArray[row, col]
+            tempArray[row, col] = tempArray[row, col+1]
+            tempArray[row, col+1] = tempHolder
+            #print("temp right \n", tempArray)
+
+            """
              *call check_inclusive(temp state)
+             *define a new temp state via temp array
+            """
+            tempState = State()
+            tempState.tile_seq = tempArray
+            tempState.depth = self.depth
+            flag = self.check_inclusive(tempState)
+            # print("TempState \n",  tempState.tile_seq)
+            """
              *do the next steps according to flag
              *if flag = 1 //not in open and closed
              *begin
              *assign the child a heuristic value via heuristic_test(temp state);
              *add the child to open
              *end;
+             """
+            if flag[0] == 1:
+                self.heuristic_test(tempState)
+                self.openlist.append(tempState)
+                # print("open list \n", self.openlist)
+            """
              *if flag = 2 //in the open list
              *if the child was reached by a shorter path
              *then give the state on open the shorter path
+             """
+            if flag[0] == 2:
+                if self.openlist[flag[1]].depth > tempState.depth:
+                    self.openlist[flag[1]].depth = tempState.depth
+            # print("depth", tempState.depth)
+            """
              *if flag = 3 //in the closed list
              *if the child was reached by a shorter path then
              *begin
@@ -202,7 +338,11 @@ class InformedSearchSolver:
              *add the child to open
              *end;
             """
-            #TODO your code end here
+            if flag[0] == 3:
+                if self.closed[flag[1]].depth > tempState.depth:
+                    self.closed.remove(self.closed[flag[1]])
+                    self.openlist.append(tempState)
+            # TODO your code end here
 
         # sort the open list first by h(n) then g(n)
         self.openlist.sort(key=self.sortFun)
@@ -210,12 +350,12 @@ class InformedSearchSolver:
 
     """
      * Solve the game using heuristic search strategies
-     
+
      * There are three types of heuristic rules:
      * (1) Tiles out of place
      * (2) Sum of distances out of place
      * (3) 2 x the number of direct tile reversals
-     
+
      * evaluation function
      * f(n) = g(n) + h(n)
      * g(n) = depth of path length to start state
@@ -228,17 +368,20 @@ class InformedSearchSolver:
 
         # (1) Tiles out of place
         h1 = 0
-        #TODO your code start here
+        # TODO your code start here
         """
          *loop over the curr_seq
          *check the every entry in curr_seq with goal_seq
         """
-        #TODO your code end here
-        
+        for i in range(len(curr_seq)):
+            for j in range(len(curr_seq[i])):
+                if curr_seq[i, j] != goal_seq[i, j]:
+                    h1 += 1
+        # TODO your code end here
 
         # (2) Sum of distances out of place
         h2 = 0
-        #TODO your code start here
+        # TODO your code start here
         """
          *loop over the goal_seq and curr_seq in nested way
          *locate the entry which has the same value in 
@@ -247,12 +390,11 @@ class InformedSearchSolver:
          *of curr_row-goal_row and curr_col-goal_col
          *absoulte value can be calculated by abs(...)
         """
-        #TODO your code end here
-        
-        
+        # TODO your code end here
+
         # (3) 2 x the number of direct tile reversals
         h3 = 0
-        #TODO your code start here
+        # TODO your code start here
         """
          *loop over the curr_seq
          *use a Γ(gamma)shap slider to walk throught curr_seq and goal_seq
@@ -267,15 +409,14 @@ class InformedSearchSolver:
          *    4             4
          *reversal is 1 2 and 2 1
         """
-        #TODO your code end here
+        # TODO your code end here
 
         h3 *= 2
 
         # set the heuristic value for current state
         current.weight = current.depth + h1 + h2 + h3
 
-
-    # You can choose to print all the states on the search path, or just the start and goal state 
+    # You can choose to print all the states on the search path, or just the start and goal state
     def run(self):
         # output the start state
         print("start state !!!!!")
@@ -285,7 +426,7 @@ class InformedSearchSolver:
 
         while not self.current.equals(self.goal):
             self.state_walk()
-            print(self.current.tile_seq)
+            print("decision \n", self.current.tile_seq)
             path += 1
 
         print("It took ", path, " iterations")
