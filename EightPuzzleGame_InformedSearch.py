@@ -350,12 +350,10 @@ class InformedSearchSolver:
 
     """
      * Solve the game using heuristic search strategies
-
      * There are three types of heuristic rules:
      * (1) Tiles out of place
      * (2) Sum of distances out of place
      * (3) 2 x the number of direct tile reversals
-
      * evaluation function
      * f(n) = g(n) + h(n)
      * g(n) = depth of path length to start state
@@ -382,6 +380,23 @@ class InformedSearchSolver:
         # (2) Sum of distances out of place
         h2 = 0
         # TODO your code start here
+        """Code to find the out of place tiles by iterating through the current list and comparing it to
+        the goal state.  If a tile is out of place, enter the next set of loops to fine where the tile 
+        should be, and then add the absolute value of the difference in the x coordinates plus the absolute
+        value of the difference in the y coordinates"""
+
+        """outer loop to find out of place tiles"""
+        for i in range(len(curr_seq)):
+            for j in range(len(curr_seq[i])):
+                if curr_seq[i, j] != goal_seq[i, j]:
+                    """if the tile is out of place, start next loops to find correct place"""
+                    for k in range(len(goal_seq)):
+                        for m in range(len(goal_seq[k])):
+                            """once correct place is found, find the absolute value of the
+                            differences in the x and y coordinates"""
+                            if curr_seq[i, j] == goal_seq[k, m]:
+                                h2 += abs(i-k) + abs(j-m)
+        print("H2 is", h2)
         """
          *loop over the goal_seq and curr_seq in nested way
          *locate the entry which has the same value in 
