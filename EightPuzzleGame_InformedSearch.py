@@ -171,9 +171,9 @@ class InformedSearchSolver:
             tempArray[row+1, col] = tempHolder
             #print("temp down \n", tempArray)
             """
-                         *call check_inclusive(temp state)
-                         *define a new temp state via temp array
-                        """
+            *call check_inclusive(temp state)
+            *define a new temp state via temp array
+             """
             tempState = State()
             tempState.tile_seq = tempArray
             tempState.depth = self.depth
@@ -396,7 +396,7 @@ class InformedSearchSolver:
                             differences in the x and y coordinates"""
                             if curr_seq[i, j] == goal_seq[k, m]:
                                 h2 += abs(i-k) + abs(j-m)
-        print("H2 is", h2)
+        #print("H2 is", h2)
         """
          *loop over the goal_seq and curr_seq in nested way
          *locate the entry which has the same value in 
@@ -410,6 +410,21 @@ class InformedSearchSolver:
         # (3) 2 x the number of direct tile reversals
         h3 = 0
         # TODO your code start here
+        for row in range(len(curr_seq)):
+            for col in range(len(curr_seq[row])):
+                if row + 1 < len(curr_seq):
+                    if curr_seq[row + 1, col] != 0 and curr_seq[row, col] != 0:
+                        if curr_seq[row + 1, col] == goal_seq[row, col] and curr_seq[row, col] == goal_seq[row + 1, col]:
+                            h3 += 1
+                            #print("Tile reversal detected: ", curr_seq[row+1, col], " and ", curr_seq[row, col])
+                            #print("Current \n", current.tile_seq, "\n vs goal \n ", goal_seq)
+
+                if col + 1 < len(curr_seq[row]):
+                    if curr_seq[row, col + 1] != 0 and curr_seq[row, col] != 0:
+                        if curr_seq[row, col + 1] == goal_seq[row, col] and curr_seq[row, col] == goal_seq[row, col + 1]:
+                            h3 += 1
+                            #print("Tile reversal detected:", curr_seq[row, col+1], " and ", curr_seq[row, col])
+                            #print("Current \n", current.tile_seq, "\n vs goal \n", goal_seq)
         """
          *loop over the curr_seq
          *use a Γ(gamma)shap slider to walk throught curr_seq and goal_seq
@@ -441,7 +456,7 @@ class InformedSearchSolver:
 
         while not self.current.equals(self.goal):
             self.state_walk()
-            print("decision \n", self.current.tile_seq)
+            #print("decision \n", self.current.tile_seq)
             path += 1
 
         print("It took ", path, " iterations")
