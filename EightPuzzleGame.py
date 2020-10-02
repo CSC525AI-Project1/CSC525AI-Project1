@@ -6,8 +6,8 @@ Instructor: Dr. Junxiu Zhou
 Semester: Fall 2020
 Your name:
 '''
-
 import numpy as np
+import time
 from EightPuzzleGame_State import State
 from EightPuzzleGame_UninformedSearch import UninformedSearchSolver
 from EightPuzzleGame_InformedSearch import InformedSearchSolver
@@ -34,12 +34,16 @@ class EightPuzzleGame:
         goal = State(goal_tile, 0, 0)
 
         self.tiles = 8
-
-        #UIS_solver = UninformedSearchSolver(init, goal)
-        #UIS_solver.run()
-
+        #t0 = time.time() #start time uninformed solver
+        UIS_solver = UninformedSearchSolver(init, goal)
+        UIS_solver.run()
+        #t1 = time.time()  #end time
+        #print("Uninformed search took ", t1-t0, " seconds")
+        #t0 = time.time() #start time informed solver
         IS_solver = InformedSearchSolver(init, goal)
         IS_solver.run()
+        #t1 = time.time() #end time informed solver
+        #print("Uninformed search took ", t1-t0, " seconds")
 
 
 # start the puzzle game
